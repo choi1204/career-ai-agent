@@ -69,5 +69,40 @@
 ### 수정: Git 워크플로우 강제화
 - Issue → Branch → Commit(#N) → PR → Merge 흐름 코드로 강제
 
+## v2.2 — 잔여 개선 + 제안 시스템 Hook 강제화
+- 날짜: 2026-02-13
+- 변경 유형: 완성도 향상 + 제안 시스템 코드 강제화
+
+### 수정: `/analyze-jd` 서브에이전트 연동
+- career-market-analyst 서브에이전트 호출로 변경 (WebSearch 활용 가능)
+
+### 수정: 5개 커맨드 역할 참조 통일
+- update-profile, create-command, intake-project, report-issue, fix-issue
+- `에이전트 역할: config/agent-roles.md → Career Advisor` → `실행 주체: 메인 세션` 형식으로 통일
+
+### 수정: PostToolUse Hook matcher 확장
+- `Write` → `Write|Edit`로 확장 (Edit으로 outcome/ 수정 시에도 검증 적용)
+
+### 추가: 제안 시스템 Hook
+- `.claude/hooks/post-write-suggestion-check.sh` — outcome/ 산출물에 "제안" 섹션 포함 여부 체크
+- 차단 아닌 리마인더 방식 (파이프라인 호환)
+- 검사 대상: outcome/1_draft, 3_review, 4_refine, 4_final, analysis, assessment
+- 검사 제외: outcome/2_verify (중간 산출물), learning (누적 데이터)
+
+### 수정: README.md
+- Claude Code Hooks 아키텍처 다이어그램 추가
+- refine-resume 서브에이전트 정보 정정
+- analyze-jd 서브에이전트 정보 추가
+- "다른 프로젝트에 재사용 가능한 Hooks" 섹션 추가
+
+### 수정: CLAUDE.md
+- 원칙 2(능동적 제안)에 Hook 강제 설명 추가
+- analyze-jd 서브에이전트 정보 정정
+
+### 참고: 플러그인 분리 검토
+- 제안 시스템을 별도 플러그인으로 분리하지 않기로 결정
+- 이유: 제안 트리거의 95%가 도메인 특화, 범용 인프라 규모 부족
+- session-wrap 플러그인(team-attention/plugins-for-claude-natives) 패턴 분석 완료
+
 ---
 <!-- 이후 시스템 개선 시 아래에 기록 추가 -->

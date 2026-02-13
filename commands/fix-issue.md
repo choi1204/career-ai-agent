@@ -4,8 +4,8 @@
 GitHub Issue를 기반으로 브랜치 생성 → 수정 → PR 생성까지 자동화합니다.
 모든 시스템 개선은 이 워크플로우를 따릅니다.
 
-## 에이전트 역할
-config/agent-roles.md → Career Advisor (시스템 확장 담당)
+## 실행 주체
+메인 세션 (오케스트레이터) — Issue 기반으로 브랜치 생성, 수정, PR까지 자동화합니다.
 
 ## 입력
 - GitHub Issue 번호 (필수)

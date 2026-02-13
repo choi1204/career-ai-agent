@@ -40,13 +40,21 @@ CLAUDE.md (부트스트랩)
   │   └─ 파이프라인 커맨드
   │       └─ /pipeline-resume   → 초안→검증→리뷰→수정 자동화
   │
-  └─ 검증 레이어
-      ├─ scripts/extract-metrics.sh       수치 자동 추출
-      ├─ scripts/check-evidence.sh        증거 대조
-      ├─ scripts/validate-resume.sh       최종 검증
-      ├─ scripts/validate-evidence-refs.sh evidence 참조 검증
-      ├─ scripts/validate-coding-log.sh   코딩테스트 로그 검증
-      └─ git pre-commit hook              커밋 시 자동 게이트
+  ├─ Claude Code Hooks (.claude/hooks/) — 코드 레벨 강제화
+  │   ├─ post-write-outcome.sh          outcome/ 작성 후 자동 검증
+  │   ├─ validate-outcome-filename.sh   파일명 규칙 자동 검증
+  │   ├─ post-write-suggestion-check.sh 제안 섹션 포함 여부 리마인더
+  │   ├─ pre-git-commit.sh             이슈 번호(#N) 필수 강제
+  │   ├─ pre-git-push.sh              main 직접 push 차단
+  │   └─ pre-edit-profile.sh           프로필 수정 전 자동 백업
+  │
+  └─ 검증 스크립트 (scripts/)
+      ├─ extract-metrics.sh             수치 자동 추출
+      ├─ check-evidence.sh              증거 대조
+      ├─ validate-resume.sh             최종 검증
+      ├─ validate-evidence-refs.sh      evidence 참조 검증
+      ├─ validate-coding-log.sh         코딩테스트 로그 검증
+      └─ git pre-commit hook            커밋 시 자동 게이트
 ```
 
 ## 핵심 차별점
@@ -114,7 +122,7 @@ claude
 | `/draft-resume` | 이력서 초안 3버전 생성 | career-resume-writer |
 | `/verify-resume` | 팩트체크 (환각 제거) | career-fact-checker |
 | `/review-resume` | 다관점 리뷰 (병렬 3중) | writer+checker+analyst |
-| `/refine-resume` | 최종본 생성 | — |
+| `/refine-resume` | 최종본 생성 | career-resume-writer → fact-checker |
 | `/pipeline-resume` | 전체 파이프라인 자동화 | 전체 에이전트 |
 | `/multi-review` | HR+TechLead+CultureFit 동시 리뷰 | 3에이전트 병렬 |
 
@@ -128,7 +136,7 @@ claude
 | 커맨드 | 설명 | 서브에이전트 |
 |--------|------|------------|
 | `/assess-capability` | 종합 역량 평가 (강점/약점 + 로드맵) | haiku → capability-assessor |
-| `/analyze-jd` | 채용공고 분석 + 매칭률 | — |
+| `/analyze-jd` | 채용공고 분석 + 매칭률 | career-market-analyst |
 | `/batch-analyze-jd` | 복수 JD 병렬 분석 + 비교 매트릭스 | market-analyst x N |
 | `/research-company` | 기업 리서치 (실시간 웹검색) | career-market-analyst |
 
@@ -197,6 +205,27 @@ claude
 | exam | 실전 모의시험 (3~4문제, 120분) |
 | review | 기존 풀이 리뷰 + 최적화 |
 | analyze | 풀이 이력 기반 취약 유형 분석 |
+
+## Claude Code Hooks
+
+프롬프트가 아닌 코드 레벨에서 규칙을 강제합니다 (`.claude/settings.json` + `.claude/hooks/`).
+
+| Hook | 이벤트 | 동작 | 방식 |
+|------|--------|------|------|
+| `post-write-outcome.sh` | PostToolUse (Write\|Edit) | outcome/ 파일 작성 후 검증 스크립트 자동 실행 | 리마인더 |
+| `validate-outcome-filename.sh` | PostToolUse (Write\|Edit) | 파일명 규칙 `{type}_v{N}_{YYYYMMDD_HHmmss}.md` 검증 | 리마인더 |
+| `post-write-suggestion-check.sh` | PostToolUse (Write\|Edit) | outcome/ 산출물에 "제안" 섹션 포함 여부 체크 | 리마인더 |
+| `pre-git-commit.sh` | PreToolUse (Bash) | 커밋 메시지에 이슈 번호 `#N` 필수 | 차단 |
+| `pre-git-push.sh` | PreToolUse (Bash) | main/master 직접 push 차단 | 차단 |
+| `pre-edit-profile.sh` | PreToolUse (Write\|Edit) | user-profile.md 수정 전 자동 백업 | 투명 |
+
+### 다른 프로젝트에 재사용 가능한 Hooks
+
+아래 Hooks는 career-ai-agent에 종속되지 않아 다른 Claude Code 프로젝트에서도 복사하여 사용할 수 있습니다:
+
+- **`pre-git-commit.sh`** — 커밋 메시지에 이슈 번호 강제 (Issue → Branch → PR 워크플로우)
+- **`pre-git-push.sh`** — main 브랜치 직접 push 차단
+- **`validate-outcome-filename.sh`** — 파일명 규칙 검증 (정규식만 변경하면 됨)
 
 ## GitHub Issues 기반 개선 워크플로우
 

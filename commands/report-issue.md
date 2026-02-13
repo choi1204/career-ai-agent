@@ -4,8 +4,8 @@
 시스템 사용 중 발견된 문제, 개선 아이디어, 새 기능 요청을 GitHub Issue로 등록합니다.
 모든 개선은 Issue → Branch → PR → Merge 워크플로우를 따릅니다.
 
-## 에이전트 역할
-config/agent-roles.md → Career Advisor (시스템 확장 담당)
+## 실행 주체
+메인 세션 (오케스트레이터) — 문제/개선 아이디어를 구조화하여 GitHub Issue로 등록합니다.
 
 ## 입력
 - 사용자의 문제 설명 또는 개선 아이디어

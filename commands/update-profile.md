@@ -3,8 +3,8 @@
 ## 목적
 outcome/에 축적된 작업 결과를 기반으로 src/user-profile.md를 개선합니다.
 
-## 에이전트 역할
-config/agent-roles.md → Career Advisor
+## 실행 주체
+메인 세션 (오케스트레이터) — 사용자와 직접 대화하며 프로필을 개선합니다.
 
 ## 입력
 - src/user-profile.md (현재 버전)
