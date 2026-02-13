@@ -28,6 +28,7 @@
 - 커맨드 실행 중 개선 기회를 발견하면 작업 결과 하단에 "제안사항" 섹션 추가
 - 반복 패턴 발견 시 → 커맨드화 제안
 - 새로운 요구가 반복될 가능성이 있으면 → 스킬 내재화 제안
+- **Hook 강제**: outcome/ 산출물 Write/Edit 시 `post-write-suggestion-check.sh`가 "제안" 섹션 포함 여부를 자동 체크하여 리마인더 제공
 
 ### 원칙 3: 코드 기반 검증 (Programmatic Verification)
 - **Claude Code Hooks** (`.claude/settings.json`)로 프롬프트가 아닌 코드 레벨 강제:
@@ -81,7 +82,7 @@
 | 커맨드 | 설명 | 서브에이전트 |
 |--------|------|------------|
 | `/assess-capability` | 종합 역량 평가 (강점/약점 + 로드맵) | haiku(수집) → capability-assessor |
-| `/analyze-jd` | 채용공고 분석 + 매칭률 | — |
+| `/analyze-jd` | 채용공고 분석 + 매칭률 | career-market-analyst |
 | `/batch-analyze-jd` | 복수 JD 병렬 분석 + 비교 매트릭스 | career-market-analyst × N |
 | `/research-company` | 기업 리서치 (실시간 웹검색) | career-market-analyst |
 
