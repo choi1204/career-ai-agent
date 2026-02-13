@@ -13,7 +13,9 @@
 | **career-market-analyst** | JD 매칭 | JD 매칭률 분석 (JD 있을 때만 실행) |
 
 ## 입력
-- outcome/2_verify/ 의 최신 파일
+- outcome/1_draft/ 또는 outcome/2_verify/ 의 최신 파일
+  - `/draft-resume`에 자동 팩트체크가 내장되어 있으므로 `/verify-resume`를 거치지 않아도 됩니다
+  - 수동으로 `/verify-resume`를 실행한 경우 outcome/2_verify/ 우선 사용
 - src/jd/*.md (있으면 JD 기준 평가)
 - config/scoring-rubric.md
 

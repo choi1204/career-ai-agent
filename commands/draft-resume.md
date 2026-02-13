@@ -33,12 +33,29 @@ Task(subagent_type="career-resume-writer", prompt="""
 """)
 ```
 
-### Step 2: 메인 세션이 검증 훅 실행
-- `scripts/extract-metrics.sh` 실행하여 수치 목록 추출
-- 수치 목록을 출력 파일 하단 "추출된 수치 목록" 섹션에 첨부
+### Step 2: 자동 팩트체크 (career-fact-checker)
+초안 생성이 완료되면 **자동으로** career-fact-checker를 호출합니다.
+사용자가 별도로 `/verify-resume`를 실행할 필요 없습니다.
+
+```
+Task(subagent_type="career-fact-checker", prompt="""
+대상 파일: {Step 1에서 생성된 초안 경로}
+
+1. scripts/extract-metrics.sh 실행하여 수치/주장 추출
+2. scripts/check-evidence.sh 실행하여 프로그래매틱 대조
+3. 5단계 태그 부착 (VERIFIED/SELF_REPORTED/UNVERIFIED/CONFLICT/EXAGGERATED)
+4. 검증 결과를 마크다운으로 반환
+""")
+```
+
+### Step 3: 통합 결과 저장
+- 초안 파일 하단에 "자동 팩트체크 결과" 섹션 첨부
+- CONFLICT/EXAGGERATED 항목이 있으면 사용자에게 즉시 안내
+- 검증 결과를 `outcome/2_verify/`에도 별도 저장
 
 ## 출력
-- outcome/1_draft/draft_v{N}_{YYYYMMDD_HHmmss}.md
+- outcome/1_draft/draft_v{N}_{YYYYMMDD_HHmmss}.md (초안 + 팩트체크 요약)
+- outcome/2_verify/verify_v{N}_{YYYYMMDD_HHmmss}.md (상세 검증 결과)
 - 3개 버전을 하나의 파일에 구분하여 저장
 
 ## 규칙

@@ -30,6 +30,9 @@
 - 새로운 요구가 반복될 가능성이 있으면 → 스킬 내재화 제안
 
 ### 원칙 3: 코드 기반 검증 (Programmatic Verification)
+- **자동 팩트체크**: `/draft-resume`, `/refine-resume` 실행 시 career-fact-checker가 자동 호출됨
+  - 별도로 `/verify-resume`를 실행할 필요 없음
+  - `/verify-resume`는 검증만 따로 재실행하고 싶을 때 사용
 - scripts/ 의 훅으로 수치 추출 → 증거 대조 → 자동 플래그
 - git pre-commit hook으로 검증 안 된 이력서 커밋 차단
 - 파일명/경로 규칙 자동 체크
@@ -59,10 +62,10 @@
 ### 이력서 파이프라인
 | 커맨드 | 설명 | 서브에이전트 |
 |--------|------|------------|
-| `/draft-resume` | 이력서 초안 3버전 생성 | career-resume-writer |
-| `/verify-resume` | 팩트체크 (환각 제거) | career-fact-checker |
+| `/draft-resume` | 초안 생성 + **자동 팩트체크** | resume-writer → fact-checker |
+| `/verify-resume` | 팩트체크 재실행 (수동) | career-fact-checker |
 | `/review-resume` | 다관점 리뷰 (병렬 3중) | resume-writer + fact-checker + market-analyst |
-| `/refine-resume` | 최종본 생성 | — |
+| `/refine-resume` | 최종본 생성 + **자동 검증** | resume-writer → fact-checker |
 | `/pipeline-resume` | 초안→검증→리뷰→수정 자동화 | 전체 파이프라인 |
 | `/multi-review` | HR+Tech Lead+Culture Fit 동시 리뷰 | 3에이전트 병렬 |
 
