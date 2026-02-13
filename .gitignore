@@ -16,3 +16,4 @@ Thumbs.db
 
 # 백업 파일
 src/*_backup_*.md
+src/.profile-backups/

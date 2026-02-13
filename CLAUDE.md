@@ -30,12 +30,14 @@
 - 새로운 요구가 반복될 가능성이 있으면 → 스킬 내재화 제안
 
 ### 원칙 3: 코드 기반 검증 (Programmatic Verification)
-- **자동 팩트체크**: `/draft-resume`, `/refine-resume` 실행 시 career-fact-checker가 자동 호출됨
-  - 별도로 `/verify-resume`를 실행할 필요 없음
-  - `/verify-resume`는 검증만 따로 재실행하고 싶을 때 사용
+- **Claude Code Hooks** (`.claude/settings.json`)로 프롬프트가 아닌 코드 레벨 강제:
+  - `outcome/` 파일 Write 후 → 검증 스크립트 **자동 실행** (AI 의지와 무관)
+  - `outcome/` 파일명 규칙 → Write 후 **자동 검증**
+  - `src/user-profile.md` 수정 전 → **자동 백업** 생성
+  - `git commit` → 이슈 번호 (#N) 없으면 **차단**
+  - `git push origin main` → **차단** (PR 통해서만 반영)
 - scripts/ 의 훅으로 수치 추출 → 증거 대조 → 자동 플래그
 - git pre-commit hook으로 검증 안 된 이력서 커밋 차단
-- 파일명/경로 규칙 자동 체크
 
 ### 원칙 4: 자기 발전 시스템 (Self-Evolving)
 - config/evolution-log.md에 시스템 개선 이력 기록

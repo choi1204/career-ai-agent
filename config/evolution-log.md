@@ -49,5 +49,25 @@
 - 코딩테스트 로그 형식 검증 추가
 - outcome/4_final/ 디렉토리 지원 추가
 
+## v2.1 — Claude Code Hooks + Git 워크플로우 강제화
+- 날짜: 2026-02-13
+- 변경 유형: 프롬프트 기반 → 코드 기반 강제화
+
+### 추가: Claude Code Hooks 5개 (`.claude/hooks/`)
+- `post-write-outcome.sh` — outcome/ 파일 Write 후 자동 검증 스크립트 실행
+- `validate-outcome-filename.sh` — outcome/ 파일명 규칙 자동 검증
+- `pre-git-commit.sh` — 커밋 메시지에 이슈 번호 (#N) 없으면 차단
+- `pre-git-push.sh` — main 브랜치 직접 push 차단 (PR 필수)
+- `pre-edit-profile.sh` — user-profile.md 수정 전 자동 백업
+
+### 추가: `.claude/settings.json`
+- PreToolUse / PostToolUse 이벤트에 hook 연결
+
+### 수정: `/draft-resume`, `/refine-resume`
+- 자동 팩트체크가 Hook으로 강제 (프롬프트 의존 제거)
+
+### 수정: Git 워크플로우 강제화
+- Issue → Branch → Commit(#N) → PR → Merge 흐름 코드로 강제
+
 ---
 <!-- 이후 시스템 개선 시 아래에 기록 추가 -->
