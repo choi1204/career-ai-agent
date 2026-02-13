@@ -43,28 +43,42 @@
 - `{type}_v{N}_{YYYYMMDD_HHmmss}.md`
 - 기존 파일 덮어쓰기 금지, 항상 새 버전 생성
 
+## 서브에이전트
+`.claude/agents/`에 5개 커스텀 에이전트가 있습니다. Task 도구의 `subagent_type`으로 호출합니다.
+
+| 에이전트 | 모델 | 역할 | 특수 권한 |
+|---------|------|------|----------|
+| career-resume-writer | opus | 이력서 작성 (STAR) | Write |
+| career-fact-checker | sonnet | 수치/주장 검증 | Bash (Write 없음) |
+| career-interview-coach | opus | 면접+코딩테스트 | Write |
+| career-market-analyst | sonnet | 시장 분석/기업 리서치 | WebSearch, WebFetch |
+| career-capability-assessor | opus | 7차원 역량 평가 | Write |
+
 ## 커맨드 목록
 
 ### 이력서 파이프라인
-| 커맨드 | 설명 |
-|--------|------|
-| `/draft-resume` | 이력서 초안 3버전 생성 |
-| `/verify-resume` | 팩트체크 (환각 제거) |
-| `/review-resume` | 전문가 관점 리뷰 |
-| `/refine-resume` | 최종본 생성 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/draft-resume` | 이력서 초안 3버전 생성 | career-resume-writer |
+| `/verify-resume` | 팩트체크 (환각 제거) | career-fact-checker |
+| `/review-resume` | 다관점 리뷰 (병렬 3중) | resume-writer + fact-checker + market-analyst |
+| `/refine-resume` | 최종본 생성 | — |
+| `/pipeline-resume` | 초안→검증→리뷰→수정 자동화 | 전체 파이프라인 |
+| `/multi-review` | HR+Tech Lead+Culture Fit 동시 리뷰 | 3에이전트 병렬 |
 
 ### 면접 & 코딩테스트
-| 커맨드 | 설명 |
-|--------|------|
-| `/mock-interview` | 기술 면접 시뮬레이션 (L1~L5) |
-| `/coding-test` | 코딩테스트 연습/모의시험/취약분석 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/mock-interview` | 기술 면접 시뮬레이션 (L1~L5) | career-interview-coach |
+| `/coding-test` | 코딩테스트 연습/모의시험/취약분석 | career-interview-coach |
 
 ### 역량 평가 & 분석
-| 커맨드 | 설명 |
-|--------|------|
-| `/assess-capability` | 종합 역량 평가 (강점/약점 + 개선 로드맵) |
-| `/analyze-jd` | 채용공고 분석 + 매칭률 |
-| `/research-company` | 기업 리서치 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/assess-capability` | 종합 역량 평가 (강점/약점 + 로드맵) | haiku(수집) → capability-assessor |
+| `/analyze-jd` | 채용공고 분석 + 매칭률 | — |
+| `/batch-analyze-jd` | 복수 JD 병렬 분석 + 비교 매트릭스 | career-market-analyst × N |
+| `/research-company` | 기업 리서치 (실시간 웹검색) | career-market-analyst |
 
 ### 데이터 관리
 | 커맨드 | 설명 |

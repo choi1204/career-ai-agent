@@ -4,8 +4,13 @@
 축적된 모든 데이터를 기반으로 "나라는 사람"의 종합 직무 역량을 평가합니다.
 강점/약점을 분석하고, 강점 강화 + 약점 완화를 위한 실행 가능한 로드맵을 생성합니다.
 
-## 에이전트 역할
-config/agent-roles.md → Career Advisor + Interview Coach + Market Analyst
+## 서브에이전트 (2단계 접근)
+
+### Phase A — 병렬 데이터 수집 (haiku, 빠른 요약)
+3개 Task를 **haiku 모델**로 동시 실행하여 데이터를 요약합니다.
+
+### Phase B — 심층 분석 (career-capability-assessor, opus)
+Phase A 요약을 받아서 7차원 종합 평가를 수행합니다.
 
 ## 입력
 - src/user-profile.md (필수)
@@ -19,14 +24,50 @@ config/agent-roles.md → Career Advisor + Interview Coach + Market Analyst
 
 ## 실행 절차
 
-### Phase 1: 데이터 수집 & 정량화
-1. 모든 소스에서 역량 신호 추출:
-   - 프로젝트: 기술 스택, 아키텍처 경험, 임팩트 규모
-   - 면접 결과: 주제별 달성 레벨 (L1~L5)
-   - 이력서 리뷰: 평가 등급
-   - JD 분석: 매칭률, 갭 항목
+### Phase A: 병렬 데이터 수집 (haiku)
+3개 Task를 **haiku 모델**로 동시 실행하여 소스 데이터를 빠르게 요약합니다:
 
-### Phase 2: 역량 차원별 평가
+```
+# 1) 프로젝트 데이터 요약
+Task(model="haiku", prompt="""
+src/projects/*.md 전체를 읽고 다음을 요약:
+- 각 프로젝트별: 기술 스택, 핵심 도전, 해결 방식, 정량적 성과
+- 전체 기술 스택 종합 (사용 빈도순)
+""")
+
+# 2) 면접/코딩 데이터 요약
+Task(model="haiku", prompt="""
+outcome/interview/*.md, outcome/learning/*.md 전체를 읽고 다음을 요약:
+- 면접 주제별 달성 L레벨 (L1~L5)
+- 코딩테스트 유형별 정답률
+- 취약 영역 목록
+""")
+
+# 3) 분석/리뷰 데이터 요약
+Task(model="haiku", prompt="""
+outcome/analysis/*.md, outcome/3_review/*.md 전체를 읽고 다음을 요약:
+- JD별 매칭률
+- 이력서 평가 등급 (항목별)
+- 반복 지적된 약점
+""")
+```
+
+### Phase B: 심층 분석 (career-capability-assessor)
+Phase A의 3개 요약 결과를 취합하여 **career-capability-assessor** 서브에이전트를 호출합니다:
+
+```
+Task(subagent_type="career-capability-assessor", prompt="""
+[Phase A 요약 데이터]
+{프로젝트 요약}
+{면접/코딩 요약}
+{분석/리뷰 요약}
+
+위 데이터와 src/user-profile.md, config/capability-dimensions.md를 기반으로
+7차원 종합 역량 평가를 수행하세요.
+""")
+```
+
+### Phase B-1: 역량 차원별 평가
 config/capability-dimensions.md 기준으로 각 차원 평가:
 
 | 차원 | 평가 방법 |

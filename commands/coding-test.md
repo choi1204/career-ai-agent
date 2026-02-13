@@ -4,8 +4,12 @@
 코딩테스트 대비를 위한 문제 풀이 연습, 풀이 리뷰, 취약 유형 분석을 수행합니다.
 실전 코딩테스트 환경을 시뮬레이션하고 체계적으로 역량을 추적합니다.
 
-## 에이전트 역할
-config/agent-roles.md → Interview Coach (코딩테스트 특화)
+## 서브에이전트
+**career-interview-coach** (`.claude/agents/career-interview-coach.md`)
+- 모델: opus (동적 대화, 적응적 피드백에 깊은 추론 필요)
+- 도구: Read, Grep, Glob, Write
+- 면접 코치와 통합된 에이전트 (상호작용 패턴 동일)
+- 대화형 커맨드이므로, 이 커맨드 실행 시 career-interview-coach 에이전트를 직접 사용하는 것을 권장합니다.
 
 ## 입력
 - 사용자 선택: 모드 (연습 / 모의시험 / 풀이리뷰 / 취약분석)

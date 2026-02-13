@@ -3,8 +3,10 @@
 ## 목적
 사용자의 경력 데이터와 타깃 JD 기반으로 이력서 초안 3가지 버전을 생성합니다.
 
-## 에이전트 역할
-config/agent-roles.md → Resume Writer
+## 서브에이전트
+**career-resume-writer** (`.claude/agents/career-resume-writer.md`)
+- 모델: opus (뉘앙스 있는 글쓰기, 톤 컨트롤)
+- 도구: Read, Grep, Glob, Write
 
 ## 입력
 - src/user-profile.md (필수)
@@ -12,24 +14,32 @@ config/agent-roles.md → Resume Writer
 - src/jd/*.md (있으면 타깃 맞춤, 없으면 범용)
 
 ## 실행 절차
+
+### Step 1: career-resume-writer 서브에이전트 호출
+```
+Task(subagent_type="career-resume-writer", prompt="""
+이력서 초안 3버전을 생성합니다.
+
 1. src/user-profile.md 읽기
-2. src/projects/ 에 등록된 프로젝트 전체 읽기
-3. src/jd/ 에 타깃 JD가 있으면 분석
-4. 3가지 버전 생성:
+2. src/projects/*.md 전체 읽기
+3. src/jd/*.md 타깃 JD 분석 (있으면)
+4. config/scoring-rubric.md 자가 점검 기준 참조
+5. 3가지 버전 생성:
    - Version A: 비즈니스 임팩트/성과 중심
    - Version B: 기술적 깊이/아키텍처 중심
    - Version C: A+B 균형형
-5. 각 버전에서 사용된 수치마다 출처 태그 부착:
-   - 출처 있음: `[evidence: {파일경로}]`
-   - 출처 없음: `[UNVERIFIED: 출처 필요]`
+6. 각 수치마다 출처 태그 부착
+7. outcome/1_draft/draft_v{N}_{timestamp}.md에 저장
+""")
+```
+
+### Step 2: 메인 세션이 검증 훅 실행
+- `scripts/extract-metrics.sh` 실행하여 수치 목록 추출
+- 수치 목록을 출력 파일 하단 "추출된 수치 목록" 섹션에 첨부
 
 ## 출력
 - outcome/1_draft/draft_v{N}_{YYYYMMDD_HHmmss}.md
 - 3개 버전을 하나의 파일에 구분하여 저장
-
-## 검증 훅
-- 생성 후 `scripts/extract-metrics.sh` 실행하여 수치 목록 추출
-- 수치 목록을 출력 파일 하단 "추출된 수치 목록" 섹션에 첨부
 
 ## 규칙
 - src/user-profile.md에 없는 경력/프로젝트를 생성하지 않음

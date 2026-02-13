@@ -4,8 +4,11 @@
 사용자의 프로젝트 기반 기술 면접 시뮬레이션을 수행합니다.
 꼬리질문으로 기술적 깊이를 테스트하고, 취약점을 발견합니다.
 
-## 에이전트 역할
-config/agent-roles.md → Interview Coach
+## 서브에이전트
+**career-interview-coach** (`.claude/agents/career-interview-coach.md`)
+- 모델: opus (동적 대화, 적응적 난이도에 깊은 추론 필요)
+- 도구: Read, Grep, Glob, Write
+- 대화형 커맨드이므로, 이 커맨드 실행 시 career-interview-coach 에이전트를 직접 사용하는 것을 권장합니다.
 
 ## 입력
 - src/user-profile.md

@@ -16,36 +16,45 @@ LLM으로 이력서를 쓰면 문장은 그럴듯하지만 수치를 지어내�
   ▼
 CLAUDE.md (부트스트랩)
   │
-  ├─ /draft-resume    → 이력서 초안 3버전 생성
-  ├─ /verify-resume   → 팩트체크 (환각 제거)
-  ├─ /review-resume   → 전문가 리뷰
-  ├─ /refine-resume   → 최종본 생성
+  ├─ 메인 세션 (Career Advisor — 오케스트레이터)
+  │   │
+  │   ├─ .claude/agents/ (5개 커스텀 서브에이전트)
+  │   │   ├─ career-resume-writer   [opus]    이력서 작성
+  │   │   ├─ career-fact-checker    [sonnet]  팩트체크 (Write 없음)
+  │   │   ├─ career-interview-coach [opus]    면접+코딩 코치
+  │   │   ├─ career-market-analyst  [sonnet]  시장분석 (WebSearch)
+  │   │   └─ career-capability-assessor [opus] 역량평가
+  │   │
+  │   ├─ 단일 에이전트 커맨드
+  │   │   ├─ /draft-resume      → career-resume-writer
+  │   │   ├─ /verify-resume     → career-fact-checker
+  │   │   ├─ /research-company  → career-market-analyst (WebSearch)
+  │   │   └─ /mock-interview    → career-interview-coach
+  │   │
+  │   ├─ 병렬 에이전트 커맨드
+  │   │   ├─ /review-resume     → 3중 병렬 (writer+checker+analyst)
+  │   │   ├─ /multi-review      → 3관점 (HR+TechLead+CultureFit)
+  │   │   ├─ /batch-analyze-jd  → N개 JD 동시 분석
+  │   │   └─ /assess-capability → haiku(수집) → opus(분석)
+  │   │
+  │   └─ 파이프라인 커맨드
+  │       └─ /pipeline-resume   → 초안→검증→리뷰→수정 자동화
   │
-  ├─ /intake-project    → 새 프로젝트 등록
-  ├─ /update-profile    → 프로필 개선
-  │
-  ├─ /mock-interview    → 기술 면접 시뮬레이션 (L1~L5)
-  ├─ /coding-test       → 코딩테스트 연습/모의시험
-  ├─ /assess-capability → 종합 역량 평가 (강점/약점)
-  │
-  ├─ /analyze-jd        → 채용공고 분석
-  ├─ /research-company  → 기업 리서치
-  │
-  ├─ /report-issue      → 문제를 GitHub Issue로 등록
-  └─ /fix-issue         → Issue → 브랜치 → PR 자동화
-
-검증 레이어:
-  scripts/extract-metrics.sh   → 수치 자동 추출
-  scripts/check-evidence.sh    → 증거 대조
-  scripts/validate-resume.sh   → 최종 검증
-  git pre-commit hook          → 커밋 시 자동 검증
+  └─ 검증 레이어
+      ├─ scripts/extract-metrics.sh       수치 자동 추출
+      ├─ scripts/check-evidence.sh        증거 대조
+      ├─ scripts/validate-resume.sh       최종 검증
+      ├─ scripts/validate-evidence-refs.sh evidence 참조 검증
+      ├─ scripts/validate-coding-log.sh   코딩테스트 로그 검증
+      └─ git pre-commit hook              커밋 시 자동 게이트
 ```
 
 ## 핵심 차별점
 
-### 1. 멀티 에이전트 구조
-각 커맨드가 독립된 에이전트 역할을 수행합니다.
-Resume Writer, Fact Checker, Interview Coach, Coding Coach, Capability Assessor, Market Analyst, Career Advisor.
+### 1. 실제 멀티 에이전트 구조
+`.claude/agents/`에 5개 커스텀 에이전트가 독립된 모델/도구/권한을 가집니다.
+opus(글쓰기/코칭) / sonnet(검증/분석) / haiku(데이터 수집)으로 모델 티어링.
+career-fact-checker는 Write 권한 없음 (소스 오염 방지 샌드박스).
 
 ### 2. 코드 기반 팩트체크
 프롬프트가 아닌 스크립트로 수치를 추출하고 증거와 대조합니다.
@@ -100,25 +109,28 @@ claude
 ## 커맨드 목록
 
 ### 이력서 파이프라인
-| 커맨드 | 설명 |
-|--------|------|
-| `/draft-resume` | 이력서 초안 3버전 생성 |
-| `/verify-resume` | 팩트체크 (환각 제거) |
-| `/review-resume` | 전문가 관점 리뷰 |
-| `/refine-resume` | 최종본 생성 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/draft-resume` | 이력서 초안 3버전 생성 | career-resume-writer |
+| `/verify-resume` | 팩트체크 (환각 제거) | career-fact-checker |
+| `/review-resume` | 다관점 리뷰 (병렬 3중) | writer+checker+analyst |
+| `/refine-resume` | 최종본 생성 | — |
+| `/pipeline-resume` | 전체 파이프라인 자동화 | 전체 에이전트 |
+| `/multi-review` | HR+TechLead+CultureFit 동시 리뷰 | 3에이전트 병렬 |
 
 ### 면접 & 코딩테스트
-| 커맨드 | 설명 |
-|--------|------|
-| `/mock-interview` | 기술 면접 시뮬레이션 (L1~L5) |
-| `/coding-test` | 코딩테스트 연습/모의시험/풀이리뷰/취약분석 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/mock-interview` | 기술 면접 시뮬레이션 (L1~L5) | career-interview-coach |
+| `/coding-test` | 코딩테스트 연습/모의시험/취약분석 | career-interview-coach |
 
 ### 역량 평가 & 분석
-| 커맨드 | 설명 |
-|--------|------|
-| `/assess-capability` | 종합 역량 평가 (강점/약점 + 개선 로드맵) |
-| `/analyze-jd` | 채용공고 분석 + 매칭률 |
-| `/research-company` | 기업 리서치 |
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/assess-capability` | 종합 역량 평가 (강점/약점 + 로드맵) | haiku → capability-assessor |
+| `/analyze-jd` | 채용공고 분석 + 매칭률 | — |
+| `/batch-analyze-jd` | 복수 JD 병렬 분석 + 비교 매트릭스 | market-analyst x N |
+| `/research-company` | 기업 리서치 (실시간 웹검색) | career-market-analyst |
 
 ### 데이터 관리
 | 커맨드 | 설명 |
