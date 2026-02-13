@@ -1,0 +1,37 @@
+# /create-command
+
+## 목적
+사용자의 새로운 요구사항을 커맨드(스킬)로 내재화합니다.
+
+## 에이전트 역할
+config/agent-roles.md → Career Advisor (시스템 확장 담당)
+
+## 입력
+- 사용자의 요구사항 설명
+- commands/ (기존 커맨드 목록)
+- config/evolution-log.md (시스템 진화 기록)
+
+## 실행 절차
+1. 사용자의 요구사항 파악
+2. 기존 커맨드와 중복 여부 확인
+3. 커맨드 파일 초안 생성 (표준 구조 따름):
+   - 목적
+   - 에이전트 역할
+   - 입력
+   - 실행 절차
+   - 출력
+   - 검증 훅
+   - 규칙
+   - 제안 트리거
+4. 사용자 리뷰 후 commands/ 에 저장
+5. config/evolution-log.md 에 기록
+6. CLAUDE.md 커맨드 목록 업데이트
+
+## 출력
+- commands/{new-command-name}.md
+- config/evolution-log.md 업데이트
+
+## 규칙
+- 기존 커맨드 구조(목적/역할/입력/절차/출력/검증/규칙/제안) 준수
+- 새 커맨드가 기존 커맨드와 겹치면 → 기존 커맨드 확장 제안
+- 커맨드명은 kebab-case 사용

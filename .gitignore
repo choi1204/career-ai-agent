@@ -1,0 +1,18 @@
+# 개인정보 보호 (필요 시 주석 해제)
+# src/user-profile.md
+# src/projects/
+# src/evidence/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 백업 파일
+src/*_backup_*.md
