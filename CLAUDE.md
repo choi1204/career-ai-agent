@@ -4,7 +4,7 @@
 
 ## 프로젝트 구조
 - `src/` — 사용자의 경력 데이터 (Source of Truth)
-- `commands/` — 실행 가능한 커맨드 (플러그인)
+- `.claude/commands/` — 실행 가능한 슬래시 커맨드
 - `outcome/` — 작업 산출물 (버전 누적)
 - `config/` — 에이전트 역할, 검증 규칙, 평가 기준
 - `scripts/` — 코드 기반 검증 훅
@@ -50,7 +50,7 @@
 - 기존 파일 덮어쓰기 금지, 항상 새 버전 생성
 
 ## 서브에이전트
-`.claude/agents/`에 5개 커스텀 에이전트가 있습니다. Task 도구의 `subagent_type`으로 호출합니다.
+`.claude/agents/`에 6개 커스텀 에이전트가 있습니다. Task 도구의 `subagent_type`으로 호출합니다.
 
 | 에이전트 | 모델 | 역할 | 특수 권한 |
 |---------|------|------|----------|
@@ -59,6 +59,7 @@
 | career-interview-coach | opus | 면접+코딩테스트 | Write |
 | career-market-analyst | sonnet | 시장 분석/기업 리서치 | WebSearch, WebFetch |
 | career-capability-assessor | opus | 7차원 역량 평가 | Write |
+| career-github-analyzer | sonnet | GitHub PR/커밋 기술 분석 | Bash (Write 없음) |
 
 ## 커맨드 목록
 
@@ -85,6 +86,12 @@
 | `/analyze-jd` | 채용공고 분석 + 매칭률 | career-market-analyst |
 | `/batch-analyze-jd` | 복수 JD 병렬 분석 + 비교 매트릭스 | career-market-analyst × N |
 | `/research-company` | 기업 리서치 (실시간 웹검색) | career-market-analyst |
+
+### 데이터 보강
+| 커맨드 | 설명 | 서브에이전트 |
+|--------|------|------------|
+| `/extract-github` | GitHub PR/커밋에서 기술적 디테일 추출 | career-github-analyzer |
+| `/enrich-project` | 인터뷰 기반 프로젝트 기술적 깊이 보강 | career-resume-writer |
 
 ### 데이터 관리
 | 커맨드 | 설명 |
