@@ -104,5 +104,33 @@
 - 이유: 제안 트리거의 95%가 도메인 특화, 범용 인프라 규모 부족
 - session-wrap 플러그인(team-attention/plugins-for-claude-natives) 패턴 분석 완료
 
+## v3.0 — GitHub 기반 기술적 깊이 추출 시스템
+- 날짜: 2026-02-13
+- 변경 유형: 새 기능 추가
+
+### 배경
+- 이력서 면접 피드백: "질문할게 없다", "기술적인 게 없다", "아하 모먼트가 없다"
+- 핵심 원인: 코드가 아닌 기억에 의존한 이력서 → 기술적 디테일 누락
+- 해결: GitHub 코드 히스토리에서 기술적 디테일을 추출하여 프로젝트 파일 보강
+
+### 추가: 커스텀 에이전트 1개
+- `.claude/agents/career-github-analyzer.md` (sonnet, Bash, Write 없음)
+- `gh` CLI로 PR/커밋/리뷰 추출 → 기술적 패턴 분류 → 기존 프로젝트 매핑
+
+### 추가: 커맨드 2개 (트리거 역할)
+- `.claude/commands/extract-github.md` — GitHub PR/커밋 기술적 분석
+- `.claude/commands/enrich-project.md` — 인터뷰 기반 프로젝트 기술적 깊이 보강
+
+### 추가: 스크립트 1개
+- `scripts/extract-github-prs.sh` — gh CLI PR 목록 추출 유틸리티
+
+### 추가: 설정 1개
+- `config/technical-depth-checklist.md` — L1~L5 기술적 깊이 체크리스트 + 아하 모먼트 패턴
+
+### 수정: CLAUDE.md
+- 서브에이전트 테이블에 career-github-analyzer 추가
+- 데이터 보강 커맨드 섹션 추가
+- commands/ 경로를 .claude/commands/로 정정
+
 ---
 <!-- 이후 시스템 개선 시 아래에 기록 추가 -->
